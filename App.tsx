@@ -17,6 +17,7 @@ import NLWLogo from './src/assets/nlw-spacetime-logo.svg'
 import { styled } from 'nativewind'
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
 import { useEffect } from 'react'
+import { api } from './src/lib/api'
 
 const StyledStripes = styled(Stripes)
 
@@ -45,7 +46,7 @@ export default function App() {
   );
 
   useEffect(() => {
-    // rodar para saber qual endereço IP executar a aplicação em caso de não funcionar
+    // executar para saber qual endereço IP executar a aplicação em caso de não funcionar
     // console.log(makeRedirectUri({
     //   scheme: 'nlwspacetime',
     // }));
@@ -55,7 +56,12 @@ export default function App() {
     if (response?.type === 'success') {
       const { code } = response.params;
 
-      console.log(code)
+      api.post('/register', {
+        code,
+      }).then((response) => {
+        const { token } = response.data
+        console.log(token)
+      })
     }
   }, [response]);
 
