@@ -1,7 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/jsx-no-undef */
 /* eslint-disable prettier/prettier */
 import { StatusBar } from 'expo-status-bar'
 import { ImageBackground, Text, TouchableOpacity, View } from 'react-native'
+import * as SecureStore from 'expo-secure-store'
 
 import {
   useFonts,
@@ -11,13 +13,14 @@ import {
 
 import { BaiJamjuree_700Bold } from '@expo-google-fonts/bai-jamjuree'
 
-import blurBg from './src/assets/bg-blur.png'
-import Stripes from './src/assets/stripes.svg'
-import NLWLogo from './src/assets/nlw-spacetime-logo.svg'
+import blurBg from '../src/assets/bg-blur.png'
+import Stripes from '../src/assets/stripes.svg'
+import NLWLogo from '../src/assets/nlw-spacetime-logo.svg'
 import { styled } from 'nativewind'
 import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
 import { useEffect } from 'react'
-import { api } from './src/lib/api'
+import { useRouter } from 'expo-router'
+import { api } from '../src/lib/api'
 
 const StyledStripes = styled(Stripes)
 
@@ -28,13 +31,15 @@ const discovery = {
 };
 
 export default function App() {
+  const router = useRouter()
+
   const [hasLoadedFonts] = useFonts({
     Roboto_400Regular,
     Roboto_700Bold,
     BaiJamjuree_700Bold,
   })
 
-  const [request, response, signInWithGithub] = useAuthRequest(
+  const [, response, signInWithGithub] = useAuthRequest(
     {
       clientId: '2277fdb029b08458b323',
       scopes: ['identity'],
@@ -44,6 +49,18 @@ export default function App() {
     },
     discovery,
   );
+
+  async function handleGithubOAuthCode(code: string) {
+    const response = await api.post('/register', {
+      code,
+    })
+
+    const { token } = response.data
+
+    await SecureStore.setItemAsync('token', token)
+
+    router.push('/memories')
+  }
 
   useEffect(() => {
     // executar para saber qual endereço IP executar a aplicação em caso de não funcionar
@@ -56,12 +73,8 @@ export default function App() {
     if (response?.type === 'success') {
       const { code } = response.params;
 
-      api.post('/register', {
-        code,
-      }).then((response) => {
-        const { token } = response.data
-        console.log(token)
-      })
+      handleGithubOAuthCode(code)
+
     }
   }, [response]);
 
