@@ -1,5 +1,5 @@
 # Spacetime Mobile <br>
-[![NPM](https://img.shields.io/npm/l/react)](https://github.com/JaasielAntunes/nlw-spacetime-mobile/blob/main/LICENSE)
+[![NPM](https://img.shields.io/npm/l/react)](https://github.com/JaasielAntunes/nlw-spacetime-mobile/blob/master/LICENSE)
 <br> <br>
 
 # Sobre o projeto:
